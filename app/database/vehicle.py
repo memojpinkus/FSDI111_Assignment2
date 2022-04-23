@@ -5,22 +5,23 @@ def output_formatter(results):
     for result in results:
         result_dict = {
             "id": result[0],
-            "first_name": result[1],
-            "last_name": result[2],
-            "hobbies": result[3],
-            "active": result[4]
+            "color": result[1],
+            "license_plate": result[2],
+            "v_type": result[3],
+            "owner_id": result[4]
         }
         out.append(result_dict)
     return out
 
-def insert(user_dict):
+def insert(vehicle_dict):
     value_tuple = (
-        user_dict.get("first_name"),
-        user_dict.get("last_name"),
-        user_dict.get("hobbies")
+        vehicle_dict.get("color"),
+        vehicle_dict.get("license_plate"),
+        vehicle_dict.get("v_type"),
+        vehicle_dict.get("owner_id")
     )
     statement = """
-        INSERT INTO user (first_name, last_name, hobbies) VALUES (?, ?, ?)
+        INSERT INTO vehicle (color, license_plate, v_type, owner_id) VALUES (?, ?, ?, ?)
     """
     cursor = get_db()
     cursor.execute(statement, value_tuple)
@@ -28,26 +29,27 @@ def insert(user_dict):
     cursor.close()
 
 def scan():
-    cursor = get_db().execute("SELECT * FROM user WHERE active=1", ())
+    cursor = get_db().execute("SELECT * FROM vehicle", ())
     results = cursor.fetchall()
     cursor.close()
     return output_formatter(results)
 
 def select_by_id(pk):
-    cursor = get_db().execute("SELECT * FROM user WHERE id=?", (pk,))
+    cursor = get_db().execute("SELECT * FROM vehicle WHERE id=?", (pk,))
     results = cursor.fetchall()
     cursor.close()
     return output_formatter(results)
 
-def update(pk, user_data):
+def update_vehicle(vehicle_data, pk):
     value_tuple = (
-        user_data.get("first_name"),
-        user_data.get("last_name"),
-        user_data.get("hobbies"),
+        vehicle_data.get("color"),
+        vehicle_data.get("license_plate"),
+        vehicle_data.get("v_type"),
+        vehicle_data.get("owner_id"),
         pk
     )
     statement = """
-        UPDATE user SET first_name=?, last_name=?, hobbies=? WHERE id=?
+        UPDATE vehicle SET color=?, license_plate=?, v_type=?, owner_id=? WHERE id=?
     """
     cursor = get_db()
     cursor.execute(statement, value_tuple)
@@ -56,7 +58,7 @@ def update(pk, user_data):
 
 def deactivate(pk):
     statement = """
-        UPDATE user SET active=0 WHERE id=?
+        UPDATE vehicle SET active=0 WHERE id=?
     """
     cursor = get_db()
     cursor.execute(statement, (pk,))
